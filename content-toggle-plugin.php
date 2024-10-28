@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Content Toggle Plugin
-Description: 自动隐藏文章中的"正确答案:"、"解析:"、"速记提示:"内容，并提供点击展开功能。
+Description: 自动隐藏文章中的"正确答案:"、"解析:"、"速记提示:"、"原文依据:"内容，并提供点击展开功能。
 Version: 1.7
 Author: Linker Lin ( https://jieyibu.net/ )
 */
@@ -70,6 +70,7 @@ function ctp_process_content($content) {
     // 定义要检测的关键词
     $patterns = array(
         '正确答案：',
+        '原文依据：',
         '解析：',
         '速记提示：'
     );
