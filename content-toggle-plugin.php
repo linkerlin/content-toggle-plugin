@@ -5,6 +5,14 @@ Description: 自动隐藏文章中的"正确答案:"、"解析:"、"速记提示
 Version: 1.7
 Author: Linker Lin ( https://jieyibu.net/ )
 */
+// 定义需要处理的关键词及其对应的按钮文本
+$ctp_keywords = array(
+    '正确答案:' => '👀 正确答案 👀',
+    '解析:' => '👀 解析 👀', 
+    '速记提示:' => '👀 速记提示 👀',
+    '原文依据:' => '👀 原文依据 👀'
+);
+
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // 防止直接访问
@@ -51,7 +59,20 @@ function ctp_enqueue_scripts() {
                         if (content) {
                             if (content.style.display === "block") {
                                 content.style.display = "none";
-                                event.target.textContent = "显示内容";
+                                // 获取内容文本
+                                const contentText = content.textContent;
+                                // 根据内容判断显示的文本
+                                if(contentText.includes("解析：")) {
+                                    event.target.textContent = "👀 解析 👀";
+                                } else if(contentText.includes("速记提示：")) {
+                                    event.target.textContent = "👀 速记提示 👀";  
+                                } else if(contentText.includes("原文依据：")) {
+                                    event.target.textContent = "👀 原文依据 👀";
+                                } else if(contentText.includes("正确答案：")) {
+                                    event.target.textContent = "👀 正确答案 👀";
+                                } else {
+                                    event.target.textContent = "显示内容";
+                                }
                             } else {
                                 content.style.display = "block";
                                 event.target.textContent = "隐藏内容";
