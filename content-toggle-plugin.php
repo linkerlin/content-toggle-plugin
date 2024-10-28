@@ -51,6 +51,9 @@ function ctp_enqueue_scripts() {
         .option-selected {
             background-color: #ffeb3b;
         }
+        .correct-mark {
+            display: none;
+        }
     ');
 
     // 注册并排队JavaScript
@@ -110,12 +113,39 @@ function ctp_enqueue_scripts() {
                                     event.target.textContent = "👀 原文依据 👀";
                                 } else if(contentText.startsWith("正确答案：")) {
                                     event.target.textContent = "👀 正确答案 👀";
+                                    // 隐藏正确答案标记
+                                    const questionDiv = wrapper.closest(".question-wrapper");
+                                    if(questionDiv) {
+                                        const match = contentText.match(/正确答案：([A-Z]+)/);
+                                        if(match) {
+                                            const correctAnswers = match[1].split("");
+                                            correctAnswers.forEach(answer => {
+                                                const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
+                                                if(mark) mark.style.display = "none";
+                                            });
+                                        }
+                                    }
                                 } else {
                                     event.target.textContent = "显示内容";
                                 }
                             } else {
                                 content.style.display = "block";
                                 event.target.textContent = "隐藏内容";
+                                // 如果是正确答案，显示对应标记
+                                const contentText = content.textContent.trim();
+                                if(contentText.startsWith("正确答案：")) {
+                                    const questionDiv = wrapper.closest(".question-wrapper");
+                                    if(questionDiv) {
+                                        const match = contentText.match(/正确答案：([A-Z]+)/);
+                                        if(match) {
+                                            const correctAnswers = match[1].split("");
+                                            correctAnswers.forEach(answer => {
+                                                const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
+                                                if(mark) mark.style.display = "inline";
+                                            });
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -134,7 +164,7 @@ function ctp_process_content($content) {
     foreach($questions as &$question) {
         // 处理选项,添加可点击效果
         $question = preg_replace('/([A-Z])\s*[.、]\s*([^<\n]+)/', 
-            '<span class="option-clickable" data-option="$1">$1. $2</span>', 
+            '<span class="option-clickable" data-option="$1">$1. $2<span class="correct-mark"> ✅</span></span>', 
             $question);
             
         // 处理隐藏内容
