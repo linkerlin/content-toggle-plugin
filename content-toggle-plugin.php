@@ -91,12 +91,17 @@ function ctp_enqueue_scripts() {
                     
                     // 恢复选项选择状态
                     if (state.selectedOptions) {
-                        state.selectedOptions.forEach(({questionIndex, optionLetter}) => {
+                        state.selectedOptions.forEach(({questionIndex, optionLetter, isCorrect}) => {
                             const questionDiv = document.querySelectorAll(".question-wrapper")[questionIndex];
                             if (questionDiv) {
                                 const option = questionDiv.querySelector(`[data-option="${optionLetter}"]`);
                                 if (option) {
-                                    option.click(); // 触发点击事件来恢复状态
+                                    option.classList.add("option-selected");
+                                    if (isCorrect) {
+                                        option.classList.add("option-correct");
+                                        const mark = option.querySelector(".correct-mark");
+                                        if (mark) mark.style.display = "inline";
+                                    }
                                 }
                             }
                         });
@@ -124,10 +129,12 @@ function ctp_enqueue_scripts() {
                     const selectedOption = questionDiv.querySelector(".option-selected");
                     if (selectedOption) {
                         const optionLetter = selectedOption.getAttribute("data-option");
+                        const isCorrect = selectedOption.classList.contains("option-correct");
                         if (optionLetter) {
                             state.selectedOptions.push({
                                 questionIndex,
-                                optionLetter
+                                optionLetter,
+                                isCorrect
                             });
                         }
                     }
