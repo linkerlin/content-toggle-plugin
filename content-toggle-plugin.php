@@ -65,6 +65,80 @@ function ctp_enqueue_scripts() {
     wp_enqueue_script( 'ctp-script' );
     wp_add_inline_script( 'ctp-script', '
         document.addEventListener("DOMContentLoaded", function() {
+            // 获取当前页面URL作为存储key的一部分
+            const pageKey = window.location.pathname;
+            
+            // 从localStorage恢复状态
+            function restoreState() {
+                const savedState = localStorage.getItem(pageKey);
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    
+                    // 恢复隐藏内容的显示状态
+                    if (state.visibleContents) {
+                        state.visibleContents.forEach(index => {
+                            const wrapper = document.querySelectorAll(".ctp-wrapper")[index];
+                            if (wrapper) {
+                                const content = wrapper.querySelector(".ctp-content");
+                                const button = wrapper.querySelector(".ctp-toggle");
+                                if (content && button) {
+                                    content.style.display = "block";
+                                    button.textContent = "隐藏内容";
+                                }
+                            }
+                        });
+                    }
+                    
+                    // 恢复选项选择状态
+                    if (state.selectedOptions) {
+                        state.selectedOptions.forEach(({questionIndex, optionLetter}) => {
+                            const questionDiv = document.querySelectorAll(".question-wrapper")[questionIndex];
+                            if (questionDiv) {
+                                const option = questionDiv.querySelector(`[data-option="${optionLetter}"]`);
+                                if (option) {
+                                    option.click(); // 触发点击事件来恢复状态
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+            
+            // 保存状态到localStorage
+            function saveState() {
+                const state = {
+                    visibleContents: [],
+                    selectedOptions: []
+                };
+                
+                // 保存隐藏内容的显示状态
+                document.querySelectorAll(".ctp-wrapper").forEach((wrapper, index) => {
+                    const content = wrapper.querySelector(".ctp-content");
+                    if (content && content.style.display === "block") {
+                        state.visibleContents.push(index);
+                    }
+                });
+                
+                // 保存选项选择状态
+                document.querySelectorAll(".question-wrapper").forEach((questionDiv, questionIndex) => {
+                    const selectedOption = questionDiv.querySelector(".option-selected");
+                    if (selectedOption) {
+                        const optionLetter = selectedOption.getAttribute("data-option");
+                        if (optionLetter) {
+                            state.selectedOptions.push({
+                                questionIndex,
+                                optionLetter
+                            });
+                        }
+                    }
+                });
+                
+                localStorage.setItem(pageKey, JSON.stringify(state));
+            }
+            
+            // 在页面加载时恢复状态
+            restoreState();
+            
             // 处理选项点击
             document.body.addEventListener("click", function(event) {
                 if(event.target && event.target.classList && event.target.classList.contains("option-clickable")) {
@@ -79,6 +153,7 @@ function ctp_enqueue_scripts() {
                         clickedOption.classList.remove("option-correct");
                         const mark = clickedOption.querySelector(".correct-mark");
                         if(mark) mark.style.display = "none";
+                        saveState(); // 保存状态
                         return;
                     }
                     
@@ -126,6 +201,8 @@ function ctp_enqueue_scripts() {
                             }
                         }
                     }
+                    
+                    saveState(); // 保存状态
                 }
                 
                 // 原有的切换按钮功能
@@ -187,6 +264,8 @@ function ctp_enqueue_scripts() {
                                     }
                                 }
                             }
+                            
+                            saveState(); // 保存状态
                         }
                     }
                 }
