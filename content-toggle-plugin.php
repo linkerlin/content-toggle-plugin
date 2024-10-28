@@ -53,6 +53,7 @@ function ctp_enqueue_scripts() {
         }
         .correct-mark {
             display: none;
+            margin-left: 5px;
         }
     ');
 
@@ -82,6 +83,18 @@ function ctp_enqueue_scripts() {
                     if(!match) return;
                     
                     const correctAnswer = match[1].split("");
+                    
+                    // 检查答案是否正确
+                    const isCorrect = selectedOptions.length === correctAnswer.length && 
+                        selectedOptions.every(opt => correctAnswer.includes(opt));
+                        
+                    if(isCorrect) {
+                        // 显示正确标记
+                        correctAnswer.forEach(answer => {
+                            const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
+                            if(mark) mark.style.display = "inline";
+                        });
+                    }
                 }
                 
                 // 原有的切换按钮功能
@@ -152,7 +165,7 @@ function ctp_process_content($content) {
     foreach($questions as &$question) {
         // 处理选项,添加可点击效果
         $question = preg_replace('/([A-Z])\s*[.、]\s*([^<\n]+)/', 
-            '<span class="option-clickable" data-option="$1">$1. $2<span class="correct-mark"> ✅</span></span>', 
+            '<span class="option-clickable" data-option="$1">$1. $2<span class="correct-mark">✅</span></span>', 
             $question);
             
         // 处理隐藏内容
