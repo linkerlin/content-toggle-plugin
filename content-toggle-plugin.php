@@ -51,6 +51,9 @@ function ctp_enqueue_scripts() {
         .option-selected {
             background-color: #ffeb3b;
         }
+        .option-correct {
+            background-color: #e8f5e9;
+        }
         .correct-mark {
             display: none;
             margin-left: 5px;
@@ -117,8 +120,12 @@ function ctp_enqueue_scripts() {
                                         if(match) {
                                             const correctAnswers = match[1].split("");
                                             correctAnswers.forEach(answer => {
-                                                const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
-                                                if(mark) mark.style.display = "none";
+                                                const option = questionDiv.querySelector(`[data-option="${answer}"]`);
+                                                if(option) {
+                                                    option.classList.remove("option-correct");
+                                                    const mark = option.querySelector(".correct-mark");
+                                                    if(mark) mark.style.display = "none";
+                                                }
                                             });
                                         }
                                     }
@@ -137,8 +144,12 @@ function ctp_enqueue_scripts() {
                                         if(match) {
                                             const correctAnswers = match[1].split("");
                                             correctAnswers.forEach(answer => {
-                                                const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
-                                                if(mark) mark.style.display = "inline";
+                                                const option = questionDiv.querySelector(`[data-option="${answer}"]`);
+                                                if(option) {
+                                                    option.classList.add("option-correct");
+                                                    const mark = option.querySelector(".correct-mark");
+                                                    if(mark) mark.style.display = "inline";
+                                                }
                                             });
                                         }
                                     }
