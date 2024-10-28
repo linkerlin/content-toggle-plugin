@@ -63,7 +63,7 @@ function ctp_enqueue_scripts() {
         document.addEventListener("DOMContentLoaded", function() {
             // 处理选项点击
             document.body.addEventListener("click", function(event) {
-                if(event.target.classList.contains("option-clickable")) {
+                if(event.target && event.target.classList && event.target.classList.contains("option-clickable")) {
                     event.target.classList.toggle("option-selected");
                     
                     // 获取当前题目的所有选项
@@ -82,22 +82,10 @@ function ctp_enqueue_scripts() {
                     if(!match) return;
                     
                     const correctAnswer = match[1].split("");
-                    
-                    // 判断答案是否正确
-                    // if(selectedOptions.length === correctAnswer.length && 
-                    //    selectedOptions.every(opt => correctAnswer.includes(opt))) {
-                    //     // 答对了，显示所有隐藏内容
-                    //     questionDiv.querySelectorAll(".ctp-content").forEach(content => {
-                    //         content.style.display = "block";
-                    //     });
-                    //     questionDiv.querySelectorAll(".ctp-toggle").forEach(btn => {
-                    //         btn.textContent = "隐藏内容";
-                    //     });
-                    // }
                 }
                 
                 // 原有的切换按钮功能
-                if (event.target.classList.contains("ctp-toggle")) {
+                if (event.target && event.target.classList && event.target.classList.contains("ctp-toggle")) {
                     const wrapper = event.target.closest(".ctp-wrapper");
                     if (wrapper) {
                         const content = wrapper.querySelector(".ctp-content");
