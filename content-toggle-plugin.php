@@ -71,8 +71,9 @@ function ctp_enqueue_scripts() {
                     const questionDiv = event.target.closest(".question-wrapper");
                     if(!questionDiv) return;
                     
-                    const selectedOptions = Array.from(questionDiv.querySelectorAll(".option-selected"))
-                        .map(opt => opt.getAttribute("data-option"));
+                    // 获取点击的选项字母
+                    const clickedOption = event.target.getAttribute("data-option");
+                    if(!clickedOption) return;
                     
                     // 获取正确答案
                     const answerDiv = questionDiv.querySelector(".ctp-content");
@@ -82,18 +83,13 @@ function ctp_enqueue_scripts() {
                     const match = answerText.match(/正确答案：([A-Z]+)/);
                     if(!match) return;
                     
-                    const correctAnswer = match[1].split("");
+                    const correctAnswer = match[1];
                     
-                    // 检查答案是否正确 - 修改后的判断逻辑
-                    const isCorrect = selectedOptions.length === correctAnswer.length && 
-                        correctAnswer.every(answer => selectedOptions.includes(answer));
-                        
-                    if(isCorrect) {
+                    // 检查点击的选项是否在正确答案中
+                    if(correctAnswer.includes(clickedOption)) {
                         // 显示正确标记
-                        correctAnswer.forEach(answer => {
-                            const mark = questionDiv.querySelector(`[data-option="${answer}"] .correct-mark`);
-                            if(mark) mark.style.display = "inline";
-                        });
+                        const mark = event.target.querySelector(".correct-mark");
+                        if(mark) mark.style.display = "inline";
                     }
                 }
                 
