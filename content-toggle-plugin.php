@@ -1,10 +1,11 @@
 <?php
 /*
 Plugin Name: Content Toggle Plugin
-Description: 自动隐藏文章中的"正确答案:"、"解析:"、"速记提示:"、"原文依据:"内容，并提供点击展开功能。
-Version: 1.7
+Description: 自动隐藏文章中的"正确答案:"、"解析:"、"速记提示:"、"原文依据:"内容，并提供点击展开功能。支持选项点击判断答案。
+Version: 1.8 
 Author: Linker Lin ( https://jieyibu.net/ )
 */
+
 // 定义需要处理的关键词及其对应的按钮文本
 $ctp_keywords = array(
     '正确答案:' => '👀 正确答案 👀',
@@ -12,7 +13,6 @@ $ctp_keywords = array(
     '速记提示:' => '👀 速记提示 👀',
     '原文依据:' => '👀 原文依据 👀'
 );
-
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // 防止直接访问
@@ -42,6 +42,15 @@ function ctp_enqueue_scripts() {
             border-left: 3px solid #0073aa;
             padding-left: 10px;
         }
+        .option-clickable {
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        .option-selected {
+            background-color: #ffeb3b;
+        }
     ');
 
     // 注册并排队JavaScript
@@ -49,19 +58,50 @@ function ctp_enqueue_scripts() {
     wp_enqueue_script( 'ctp-script' );
     wp_add_inline_script( 'ctp-script', '
         document.addEventListener("DOMContentLoaded", function() {
+            // 处理选项点击
             document.body.addEventListener("click", function(event) {
+                if(event.target.classList.contains("option-clickable")) {
+                    event.target.classList.toggle("option-selected");
+                    
+                    // 获取当前题目的所有选项
+                    const questionDiv = event.target.closest(".question-wrapper");
+                    if(!questionDiv) return;
+                    
+                    const selectedOptions = Array.from(questionDiv.querySelectorAll(".option-selected"))
+                        .map(opt => opt.getAttribute("data-option"));
+                    
+                    // 获取正确答案
+                    const answerDiv = questionDiv.querySelector(".ctp-content");
+                    if(!answerDiv) return;
+                    
+                    const answerText = answerDiv.textContent;
+                    const match = answerText.match(/正确答案：([A-Z]+)/);
+                    if(!match) return;
+                    
+                    const correctAnswer = match[1].split("");
+                    
+                    // 判断答案是否正确
+                    if(selectedOptions.length === correctAnswer.length && 
+                       selectedOptions.every(opt => correctAnswer.includes(opt))) {
+                        // 答对了，显示所有隐藏内容
+                        questionDiv.querySelectorAll(".ctp-content").forEach(content => {
+                            content.style.display = "block";
+                        });
+                        questionDiv.querySelectorAll(".ctp-toggle").forEach(btn => {
+                            btn.textContent = "隐藏内容";
+                        });
+                    }
+                }
+                
+                // 原有的切换按钮功能
                 if (event.target.classList.contains("ctp-toggle")) {
-                    console.log("按钮点击了: ", event.target);
                     const wrapper = event.target.closest(".ctp-wrapper");
                     if (wrapper) {
                         const content = wrapper.querySelector(".ctp-content");
-                        console.log("找到的内容元素: ", content);
                         if (content) {
                             if (content.style.display === "block") {
                                 content.style.display = "none";
-                                // 获取内容文本
                                 const contentText = content.textContent.trim();
-                                // 根据内容判断显示的文本
                                 if(contentText.startsWith("解析：")) {
                                     event.target.textContent = "👀 解析 👀";
                                 } else if(contentText.startsWith("速记提示：")) {
@@ -88,25 +128,34 @@ add_action( 'wp_enqueue_scripts', 'ctp_enqueue_scripts' );
 
 // 处理文章内容
 function ctp_process_content($content) {
-    // 定义要检测的关键词
-    $patterns = array(
-        '正确答案：',
-        '原文依据：',
-        '解析：',
-        '速记提示：'
-    );
+    // 将内容按题目分割
+    $questions = preg_split('/<h[1-6][^>]*>.*?<\/h[1-6]>/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+    
+    foreach($questions as &$question) {
+        // 处理选项,添加可点击效果
+        $question = preg_replace('/([A-Z])\s*[.、]\s*([^<\n]+)/', 
+            '<span class="option-clickable" data-option="$1">$1. $2</span>', 
+            $question);
+            
+        // 处理隐藏内容
+        $patterns = array(
+            '正确答案：',
+            '原文依据：',
+            '解析：',
+            '速记提示：'
+        );
 
-    foreach ($patterns as $pattern) {
-        // 匹配 pattern 后面到下一个换行或段落的内容
-        $regex = '/(' . preg_quote($pattern, '/') . '(.*?))((?:\r?\n\r?\n|\Z))/s';
-
-        // 替换成带按钮和隐藏内容的结构
-        $replacement = '<div class="ctp-wrapper"><button class="ctp-toggle">显示内容</button><div class="ctp-content">$1</div></div>$3';
-
-        $content = preg_replace($regex, $replacement, $content);
+        foreach ($patterns as $pattern) {
+            $regex = '/(' . preg_quote($pattern, '/') . '(.*?))((?:\r?\n\r?\n|\Z))/s';
+            $replacement = '<div class="ctp-wrapper"><button class="ctp-toggle">显示内容</button><div class="ctp-content">$1</div></div>$3';
+            $question = preg_replace($regex, $replacement, $question);
+        }
+        
+        // 将整个题目包装在div中
+        $question = '<div class="question-wrapper">' . $question . '</div>';
     }
-
-    return $content;
+    
+    return implode('', $questions);
 }
 add_filter('the_content', 'ctp_process_content');
 ?>
