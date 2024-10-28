@@ -81,16 +81,16 @@ function ctp_enqueue_scripts() {
                     const correctAnswer = match[1].split("");
                     
                     // 判断答案是否正确
-                    if(selectedOptions.length === correctAnswer.length && 
-                       selectedOptions.every(opt => correctAnswer.includes(opt))) {
-                        // 答对了，显示所有隐藏内容
-                        questionDiv.querySelectorAll(".ctp-content").forEach(content => {
-                            content.style.display = "block";
-                        });
-                        questionDiv.querySelectorAll(".ctp-toggle").forEach(btn => {
-                            btn.textContent = "隐藏内容";
-                        });
-                    }
+                    // if(selectedOptions.length === correctAnswer.length && 
+                    //    selectedOptions.every(opt => correctAnswer.includes(opt))) {
+                    //     // 答对了，显示所有隐藏内容
+                    //     questionDiv.querySelectorAll(".ctp-content").forEach(content => {
+                    //         content.style.display = "block";
+                    //     });
+                    //     questionDiv.querySelectorAll(".ctp-toggle").forEach(btn => {
+                    //         btn.textContent = "隐藏内容";
+                    //     });
+                    // }
                 }
                 
                 // 原有的切换按钮功能
