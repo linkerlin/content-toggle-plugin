@@ -60,15 +60,15 @@ function ctp_enqueue_scripts() {
                             if (content.style.display === "block") {
                                 content.style.display = "none";
                                 // 获取内容文本
-                                const contentText = content.textContent;
+                                const contentText = content.textContent.trim();
                                 // 根据内容判断显示的文本
-                                if(contentText.includes("解析：")) {
+                                if(contentText.startsWith("解析：")) {
                                     event.target.textContent = "👀 解析 👀";
-                                } else if(contentText.includes("速记提示：")) {
+                                } else if(contentText.startsWith("速记提示：")) {
                                     event.target.textContent = "👀 速记提示 👀";  
-                                } else if(contentText.includes("原文依据：")) {
+                                } else if(contentText.startsWith("原文依据：")) {
                                     event.target.textContent = "👀 原文依据 👀";
-                                } else if(contentText.includes("正确答案：")) {
+                                } else if(contentText.startsWith("正确答案：")) {
                                     event.target.textContent = "👀 正确答案 👀";
                                 } else {
                                     event.target.textContent = "显示内容";
