@@ -68,11 +68,20 @@ function ctp_enqueue_scripts() {
             // 处理选项点击
             document.body.addEventListener("click", function(event) {
                 if(event.target && event.target.classList && event.target.classList.contains("option-clickable")) {
-                    event.target.classList.toggle("option-selected");
-                    
-                    // 获取当前题目的所有选项
+                    // 清除所有选中状态
                     const questionDiv = event.target.closest(".question-wrapper");
                     if(!questionDiv) return;
+                    
+                    const allOptions = questionDiv.querySelectorAll(".option-clickable");
+                    allOptions.forEach(option => {
+                        option.classList.remove("option-selected");
+                        option.classList.remove("option-correct");
+                        const mark = option.querySelector(".correct-mark");
+                        if(mark) mark.style.display = "none";
+                    });
+                    
+                    // 设置当前选项为选中状态
+                    event.target.classList.add("option-selected");
                     
                     // 获取点击的选项字母
                     const clickedOption = event.target.getAttribute("data-option");
@@ -88,9 +97,9 @@ function ctp_enqueue_scripts() {
                     
                     const correctAnswer = match[1];
                     
-                    // 检查点击的选项是否在正确答案中
-                    if(correctAnswer.includes(clickedOption)) {
-                        // 显示正确标记
+                    // 检查点击的选项是否是正确答案
+                    if(correctAnswer === clickedOption) {
+                        event.target.classList.add("option-correct");
                         const mark = event.target.querySelector(".correct-mark");
                         if(mark) mark.style.display = "inline";
                     }
