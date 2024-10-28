@@ -84,9 +84,9 @@ function ctp_enqueue_scripts() {
                     
                     const correctAnswer = match[1].split("");
                     
-                    // 检查答案是否正确
+                    // 检查答案是否正确 - 修改后的判断逻辑
                     const isCorrect = selectedOptions.length === correctAnswer.length && 
-                        selectedOptions.every(opt => correctAnswer.includes(opt));
+                        correctAnswer.every(answer => selectedOptions.includes(answer));
                         
                     if(isCorrect) {
                         // 显示正确标记
