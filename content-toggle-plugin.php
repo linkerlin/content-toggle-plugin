@@ -52,7 +52,7 @@ function ctp_enqueue_scripts() {
             background-color: #ffeb3b;
         }
         .option-correct {
-            background-color: #e8f5e9;
+            background-color: #c8e6c9 !important;
         }
         .correct-mark {
             display: none;
@@ -68,10 +68,21 @@ function ctp_enqueue_scripts() {
             // 处理选项点击
             document.body.addEventListener("click", function(event) {
                 if(event.target && event.target.classList && event.target.classList.contains("option-clickable")) {
-                    // 清除所有选中状态
-                    const questionDiv = event.target.closest(".question-wrapper");
+                    // 获取点击的选项和问题容器
+                    const clickedOption = event.target;
+                    const questionDiv = clickedOption.closest(".question-wrapper");
                     if(!questionDiv) return;
                     
+                    // 如果当前选项已经被选中，则取消选中
+                    if(clickedOption.classList.contains("option-selected")) {
+                        clickedOption.classList.remove("option-selected");
+                        clickedOption.classList.remove("option-correct");
+                        const mark = clickedOption.querySelector(".correct-mark");
+                        if(mark) mark.style.display = "none";
+                        return;
+                    }
+                    
+                    // 清除所有选中状态
                     const allOptions = questionDiv.querySelectorAll(".option-clickable");
                     allOptions.forEach(option => {
                         option.classList.remove("option-selected");
@@ -81,11 +92,11 @@ function ctp_enqueue_scripts() {
                     });
                     
                     // 设置当前选项为选中状态
-                    event.target.classList.add("option-selected");
+                    clickedOption.classList.add("option-selected");
                     
                     // 获取点击的选项字母
-                    const clickedOption = event.target.getAttribute("data-option");
-                    if(!clickedOption) return;
+                    const clickedOptionLetter = clickedOption.getAttribute("data-option");
+                    if(!clickedOptionLetter) return;
                     
                     // 获取正确答案
                     const answerDiv = questionDiv.querySelector(".ctp-content");
@@ -98,9 +109,9 @@ function ctp_enqueue_scripts() {
                     const correctAnswer = match[1];
                     
                     // 检查点击的选项是否是正确答案
-                    if(correctAnswer === clickedOption) {
-                        event.target.classList.add("option-correct");
-                        const mark = event.target.querySelector(".correct-mark");
+                    if(correctAnswer === clickedOptionLetter) {
+                        clickedOption.classList.add("option-correct");
+                        const mark = clickedOption.querySelector(".correct-mark");
                         if(mark) mark.style.display = "inline";
                     }
                 }
