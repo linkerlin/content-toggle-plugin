@@ -103,16 +103,28 @@ function ctp_enqueue_scripts() {
                     if(!answerDiv) return;
                     
                     const answerText = answerDiv.textContent;
-                    const match = answerText.match(/正确答案：([A-Z]+)/);
+                    const match = answerText.match(/正确答案：\s*([A-Z]+)/);
                     if(!match) return;
                     
-                    const correctAnswer = match[1];
+                    const correctAnswer = match[1].trim(); // 去除多余空格
                     
                     // 检查点击的选项是否是正确答案
                     if(correctAnswer === clickedOptionLetter) {
                         clickedOption.classList.add("option-correct");
                         const mark = clickedOption.querySelector(".correct-mark");
                         if(mark) mark.style.display = "inline";
+                    }
+                    
+                    // 如果是单选题(正确答案只有一个字母)，自动展开正确答案
+                    if(correctAnswer.length === 1) {
+                        const answerWrapper = answerDiv.closest(".ctp-wrapper");
+                        if(answerWrapper) {
+                            answerDiv.style.display = "block";
+                            const toggleButton = answerWrapper.querySelector(".ctp-toggle");
+                            if(toggleButton) {
+                                toggleButton.textContent = "隐藏内容";
+                            }
+                        }
                     }
                 }
                 
@@ -136,9 +148,9 @@ function ctp_enqueue_scripts() {
                                     // 隐藏正确答案标记
                                     const questionDiv = wrapper.closest(".question-wrapper");
                                     if(questionDiv) {
-                                        const match = contentText.match(/正确答案：([A-Z]+)/);
+                                        const match = contentText.match(/正确答案：\s*([A-Z]+)/);
                                         if(match) {
-                                            const correctAnswers = match[1].split("");
+                                            const correctAnswers = match[1].trim().split(""); // 去除多余空格
                                             correctAnswers.forEach(answer => {
                                                 const option = questionDiv.querySelector(`[data-option="${answer}"]`);
                                                 if(option) {
@@ -160,9 +172,9 @@ function ctp_enqueue_scripts() {
                                 if(contentText.startsWith("正确答案：")) {
                                     const questionDiv = wrapper.closest(".question-wrapper");
                                     if(questionDiv) {
-                                        const match = contentText.match(/正确答案：([A-Z]+)/);
+                                        const match = contentText.match(/正确答案：\s*([A-Z]+)/);
                                         if(match) {
-                                            const correctAnswers = match[1].split("");
+                                            const correctAnswers = match[1].trim().split(""); // 去除多余空格
                                             correctAnswers.forEach(answer => {
                                                 const option = questionDiv.querySelector(`[data-option="${answer}"]`);
                                                 if(option) {
