@@ -63,7 +63,7 @@ function ctp_enqueue_scripts() {
     // 注册并排队JavaScript
     wp_register_script( 'ctp-script', '', array(), '', true );
     wp_enqueue_script( 'ctp-script' );
-    wp_add_inline_script( 'ctp-script', '
+    wp_add_inline_script( 'ctp-script', <<<'EOD'
         document.addEventListener("DOMContentLoaded", function() {
             // 获取当前页面URL作为存储key的一部分
             const pageKey = window.location.pathname;
@@ -278,7 +278,8 @@ function ctp_enqueue_scripts() {
                 }
             });
         });
-    ');
+EOD
+    );
 }
 add_action( 'wp_enqueue_scripts', 'ctp_enqueue_scripts' );
 
