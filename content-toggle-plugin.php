@@ -23,7 +23,7 @@ function ctp_enqueue_scripts() {
     // 注册并排队CSS
     wp_register_style( 'ctp-style', false );
     wp_enqueue_style( 'ctp-style' );
-    wp_add_inline_style( 'ctp-style', '
+    wp_add_inline_style( 'ctp-style', <<<'EOD'
         .ctp-wrapper {
             margin-bottom: 15px;
         }
@@ -58,7 +58,8 @@ function ctp_enqueue_scripts() {
             display: none;
             margin-left: 5px;
         }
-    ');
+EOD
+    );
 
     // 注册并排队JavaScript
     wp_register_script( 'ctp-script', '', array(), '', true );
