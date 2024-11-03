@@ -286,8 +286,8 @@ add_action( 'wp_enqueue_scripts', 'ctp_enqueue_scripts' );
 
 // 处理文章内容
 function ctp_process_content($content) {
-    // 将内容按题目分割
-    $questions = preg_split('/<h[1-6][^>]*>.*?<\/h[1-6]>/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+    // 修改分割方式，使用 PREG_SPLIT_DELIM_CAPTURE 标志来保留分隔符
+    $questions = preg_split('/<h[1-6][^>]*>.*?<\/h[1-6]>/i', $content, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     
     foreach($questions as &$question) {
         // 处理选项,添加可点击效果
