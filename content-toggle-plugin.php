@@ -76,19 +76,19 @@ EOD
                     const state = JSON.parse(savedState);
                     
                     // 恢复隐藏内容的显示状态
-                    if (state.visibleContents) {
-                        state.visibleContents.forEach(index => {
-                            const wrapper = document.querySelectorAll(".ctp-wrapper")[index];
-                            if (wrapper) {
-                                const content = wrapper.querySelector(".ctp-content");
-                                const button = wrapper.querySelector(".ctp-toggle");
-                                if (content && button) {
-                                    content.style.display = "block";
-                                    button.textContent = "隐藏内容";
-                                }
-                            }
-                        });
-                    }
+                    // if (state.visibleContents) {
+                    //     state.visibleContents.forEach(index => {
+                    //         const wrapper = document.querySelectorAll(".ctp-wrapper")[index];
+                    //         if (wrapper) {
+                    //             const content = wrapper.querySelector(".ctp-content");
+                    //             const button = wrapper.querySelector(".ctp-toggle");
+                    //             if (content && button) {
+                    //                 content.style.display = "block";
+                    //                 button.textContent = "隐藏内容";
+                    //             }
+                    //         }
+                    //     });
+                    // }
                     
                     // 恢复选项选择状态
                     if (state.selectedOptions) {
