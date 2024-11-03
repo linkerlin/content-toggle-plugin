@@ -286,9 +286,9 @@ add_action( 'wp_enqueue_scripts', 'ctp_enqueue_scripts' );
 
 // 处理文章内容
 function ctp_process_content($content) {
-    // 移除 PREG_SPLIT_DELIM_CAPTURE 标志
-    $questions = preg_split('/<h[1-6][^>]*>.*?<\/h[1-6]>/i', $content, -1);
-    
+    // 只匹配"问题 数字"格式的标题
+    $questions = preg_split('/<h[1-6][^>]*>问题\s*\d+.*?<\/h[1-6]>/i', $content, -1);
+        
     foreach($questions as &$question) {
         // 处理选项,添加可点击效果
         $question = preg_replace('/([A-K])\s*[.、)：: ]\s*([^<\n]+)/', 
