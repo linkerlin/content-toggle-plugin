@@ -291,7 +291,7 @@ function ctp_process_content($content) {
         
     foreach($questions as &$question) {
         // 处理选项,添加可点击效果
-        $question = preg_replace('/([A-K])\s*[.、)：: ]\s*([^<\n]+)/', 
+        $question = preg_replace('/(?<![A-Za-z])([A-Z])\s*[.、)：:]\s*([^<\n]+)/m',  #'/([A-K])\s*[.、)：: ]\s*([^<\n]+)/', 
             '<span class="option-clickable" data-option="$1">$1. $2<span class="correct-mark">✅</span></span>', 
             $question);
             
